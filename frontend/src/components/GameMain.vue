@@ -650,6 +650,40 @@
       <button class="footer-btn danger" @click="handleReset">🔄 重置</button>
     </div>
 
+    <!-- 开场剧情弹窗 -->
+    <div v-if="showIntroModal" class="modal-overlay intro-modal-overlay">
+      <div class="modal-content intro-modal-content">
+        <div class="intro-header">
+          <span class="intro-icon">🌅</span>
+          <h3 class="intro-title">穿越·初醒</h3>
+        </div>
+        <div class="intro-body">
+          <div class="intro-story" v-html="introStory"></div>
+          <div class="intro-stats">
+            <div class="intro-stat-item">
+              <span class="stat-label">⚔️ 武魂</span>
+              <span class="stat-value">{{ player.wuhunList?.[0] }}（{{ player.wuhunCategoryList?.[0] }}）</span>
+            </div>
+            <div v-if="player.isDualSoul" class="intro-stat-item">
+              <span class="stat-label">⚔️ 副武魂</span>
+              <span class="stat-value">{{ player.wuhun2Name }}（{{ player.wuhun2Category }}）</span>
+            </div>
+            <div class="intro-stat-item">
+              <span class="stat-label">🌟 先天魂力</span>
+              <span class="stat-value">{{ player.先天魂力 }}</span>
+            </div>
+            <div class="intro-stat-item">
+              <span class="stat-label">📈 初始等级</span>
+              <span class="stat-value">{{ player.魂力等级 }}级（{{ soulTitle }}）</span>
+            </div>
+          </div>
+        </div>
+        <div class="intro-footer">
+          <button class="intro-btn" @click="closeIntroModal">🌿 知晓</button>
+        </div>
+      </div>
+    </div>
+
     <!-- 魂环吸收弹窗 -->
     <div v-if="showRingAbsorbModal" class="modal-overlay" @click.self="closeRingAbsorbModal">
       <div class="modal-content ring-absorb-modal">
@@ -715,6 +749,7 @@ const isDead = ref(false)
 const resetConfirm = ref(false)
 const showRingAbsorbModal = ref(false)
 const currentHuntedBeast = ref(null)
+const showIntroModal = ref(false)
 
 const tabs = [
   { id: 'dashboard', name: '大陆', icon: '🌍' },
@@ -761,6 +796,33 @@ const soulTitle = computed(() => {
   if (level < 99) return '超级斗罗'
   if (level < 100) return '极限斗罗'
   return '神级'
+})
+
+const introStory = computed(() => {
+  const p = props.player
+  const origin = p.origin || '未知之地'
+  const family = p.family || '平凡之家'
+  const memory = p.memory || '模糊的记忆'
+  const personality = p.personality || '普通'
+  const initItem = p.initItem || '无'
+  
+  return `
+    <p>你醒来的时候，闻到了泥土的气息。</p>
+    <p>你低头看了看自己的手——那是一双孩童的手。</p>
+    <p>你想起了一个名字：${p.name}。</p>
+    <p>你在${origin}的小溪边洗衣服，一个男孩走过来帮你提水桶。</p>
+    <p>你常常做一个梦，梦里有一双手轻轻抚摸你的额头。</p>
+    <p>村里的老人说「男孩子要顶天立地」。</p>
+    <p>你站在这个陌生的世界里，风从远处吹来，带着炊烟的气息。</p>
+    <p>「我穿越了。」你对自己说。</p>
+    <p>「这里……是斗罗大陆。」</p>
+    <p class="intro-divider">━━━━━━━━━━━━━━━━</p>
+    <p><strong>出身：</strong>${origin}</p>
+    <p><strong>家世：</strong>${family}</p>
+    <p><strong>记忆：</strong>${memory}</p>
+    <p><strong>性格：</strong>${personality}</p>
+    <p><strong>初始物品：</strong>${initItem}</p>
+  `
 })
 
 const maxRings = computed(() => Math.floor((props.player.魂力等级 || 0) / 10))
@@ -1242,7 +1304,19 @@ onMounted(() => {
   loadNpcs()
   loadPartners()
   loadShop()
+  // 检测是否是新创建的角色，如果是则显示开场剧情
+  const introShown = localStorage.getItem('douluo_intro_shown_' + props.sessionId)
+  if (!introShown) {
+    setTimeout(() => {
+      showIntroModal.value = true
+      localStorage.setItem('douluo_intro_shown_' + props.sessionId, 'true')
+    }, 600)
+  }
 })
+
+function closeIntroModal() {
+  showIntroModal.value = false
+}
 </script>
 
 <style scoped>
@@ -2847,6 +2921,107 @@ onMounted(() => {
   max-width: 400px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   overflow: hidden;
+}
+
+/* 开场剧情弹窗 */
+.intro-modal-overlay {
+  background: rgba(0, 0, 0, 0.7);
+  animation: fadeIn 0.5s ease;
+}
+.intro-modal-content {
+  max-width: 500px;
+  background: linear-gradient(135deg, #1a1a3a 0%, #2a2a5a 100%);
+  color: #fff;
+  border: 2px solid rgba(255, 215, 100, 0.3);
+  box-shadow: 0 0 40px rgba(100, 150, 255, 0.3);
+  animation: slideUp 0.5s ease;
+}
+.intro-header {
+  text-align: center;
+  padding: 20px;
+  background: rgba(255, 215, 100, 0.1);
+  border-bottom: 1px solid rgba(255, 215, 100, 0.2);
+}
+.intro-icon {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 8px;
+}
+.intro-title {
+  margin: 0;
+  font-size: 22px;
+  color: #ffd764;
+  letter-spacing: 4px;
+}
+.intro-body {
+  padding: 20px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.intro-story {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #e0e0ff;
+}
+.intro-story p {
+  margin: 8px 0;
+}
+.intro-divider {
+  text-align: center;
+  color: rgba(255, 215, 100, 0.5);
+  margin: 16px 0 !important;
+}
+.intro-stats {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 215, 100, 0.2);
+}
+.intro-stat-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 13px;
+}
+.stat-label {
+  color: #a0a0c0;
+}
+.stat-value {
+  color: #ffd764;
+  font-weight: bold;
+}
+.intro-footer {
+  padding: 16px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.2);
+}
+.intro-btn {
+  background: linear-gradient(135deg, #4a6cf7 0%, #6a8cff 100%);
+  color: #fff;
+  border: none;
+  padding: 10px 40px;
+  border-radius: 20px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+  letter-spacing: 2px;
+}
+.intro-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(74, 108, 247, 0.4);
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .modal-header {
   display: flex;
