@@ -1,0 +1,14 @@
+{
+  "name": "douluo-backend",
+  "version": "1.0.0",
+  "description": "斗罗大陆模拟器后端API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  }
+}
