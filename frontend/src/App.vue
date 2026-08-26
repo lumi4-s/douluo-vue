@@ -10,7 +10,7 @@
 import { ref, onMounted } from 'vue'
 import CreateCharacter from './components/CreateCharacter.vue'
 import GameMain from './components/GameMain.vue'
-import { getState } from './api'
+import { getState } from './api-local'
 
 const sessionId = ref(null)
 const player = ref(null)

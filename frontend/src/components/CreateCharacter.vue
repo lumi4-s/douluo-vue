@@ -54,7 +54,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { createCharacter } from '../api'
+import { createCharacter } from '../api-local'
 
 const emit = defineEmits(['created'])
 

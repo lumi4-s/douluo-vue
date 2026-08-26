@@ -692,8 +692,8 @@ import {
   talkToNpc, marryNpc, huntBeast, absorbRing, doTask, refreshTasks,
   buyItem, sellItem, equipItem, unequipItem, useItem, exchangeCurrency, attemptGod,
   equipSoulBone, unequipSoulBone,
-  getNpcs, getPartners, getShopItems, saveGame, loadGame, resetGame
-} from '../api'
+  getMetNpcs as getNpcs, getPartners, getShopItems, saveGame, loadGame, resetGame
+} from '../api-local'
 
 const props = defineProps({
   sessionId: String,
