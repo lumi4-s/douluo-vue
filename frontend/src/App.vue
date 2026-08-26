@@ -1,10 +1,8 @@
 <template>
   <div class="app">
     <div v-if="loading" class="loading">正在恢复游戏...</div>
-    <transition name="fade" mode="out-in">
-      <CreateCharacter v-if="!sessionId" key="create" @created="onGameCreated" />
-      <GameMain v-else key="game" :session-id="sessionId" :player="player" :logs="logs" @update="onStateUpdate" />
-    </transition>
+    <CreateCharacter v-else-if="!sessionId" @created="onGameCreated" />
+    <GameMain v-else :session-id="sessionId" :player="player" :logs="logs" @update="onStateUpdate" />
   </div>
 </template>
 
@@ -72,14 +70,5 @@ function onStateUpdate(data) {
   height: 100%;
   font-size: 18px;
   color: #666;
-}
-/* 淡入淡出过渡 */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 </style>
